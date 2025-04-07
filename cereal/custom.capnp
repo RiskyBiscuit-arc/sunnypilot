@@ -88,6 +88,7 @@ struct ModelManagerSP @0xaedffd8f31e7b55d {
 
 struct LongitudinalPlanSP @0xf35cc4560bbf6ec2 {
   dec @0 :DynamicExperimentalControl;
+  longtuningStatus @1 :NNFFLongTuningStatus;
 
   struct DynamicExperimentalControl {
     state @0 :DynamicExperimentalControlState;
@@ -99,6 +100,16 @@ struct LongitudinalPlanSP @0xf35cc4560bbf6ec2 {
       blended @1;
     }
   }
+  struct NNFFLongTuningStatus {
+    tuning @0 :TuningSource;
+
+    enum TuningSource {
+      none @0;
+      onroad @1;
+      replay @2;
+    }
+  }
+
 }
 
 struct OnroadEventSP @0xda96579883444c35 {
@@ -143,7 +154,6 @@ struct OnroadEventSP @0xda96579883444c35 {
 struct CarParamsSP @0x80ae746ee2596b11 {
   flags @0 :UInt32;        # flags for car specific quirks in sunnypilot
   safetyParam @1 : Int16;  # flags for sunnypilot's custom safety flags
-
   neuralNetworkLateralControl @2 :NeuralNetworkLateralControl;
 
   struct NeuralNetworkLateralControl {
@@ -159,6 +169,7 @@ struct CarParamsSP @0x80ae746ee2596b11 {
 
 struct CarControlSP @0xa5cd762cd951a455 {
   mads @0 :ModularAssistiveDrivingSystem;
+  nnffLongTuning @1 :Text;  # JSON string holding NNFF tuned params
 }
 
 struct BackupManagerSP @0xf98d843bfd7004a3 {
@@ -169,14 +180,14 @@ struct BackupManagerSP @0xf98d843bfd7004a3 {
   lastError @4 :Text;
   currentBackup @5 :BackupInfo;
   backupHistory @6 :List(BackupInfo);
-  
+
   enum Status {
     idle @0;
     inProgress @1;
     completed @2;
     failed @3;
   }
-  
+
   struct Version {
     major @0 :UInt16;
     minor @1 :UInt16;
@@ -184,13 +195,13 @@ struct BackupManagerSP @0xf98d843bfd7004a3 {
     build @3 :UInt16;
     branch @4 :Text;
   }
-  
+
   struct MetadataEntry {
     key @0 :Text;
     value @1 :Text;
     tags @2 :List(Text);
   }
-  
+
   struct BackupInfo {
     deviceId @0 :Text;
     version @1 :UInt32;

@@ -57,6 +57,10 @@ def only_onroad(started: bool, params: Params, CP: car.CarParams) -> bool:
 def only_offroad(started: bool, params: Params, CP: car.CarParams) -> bool:
   return not started
 
+def enable_offroad_long_tuner(started, params, CP: car.CarParams) -> bool:
+  """Check if the offroad longitudinal tuner should run based on tuning mode enum."""
+  return not started and params.get("LongitudinalLiveTuneParams", "none") == "replay"
+
 def use_github_runner(started, params, CP: car.CarParams) -> bool:
   return not PC and params.get_bool("EnableGithubRunner") and not params.get_bool("NetworkMetered")
 
@@ -152,6 +156,7 @@ procs += [
   PythonProcess("models_manager", "sunnypilot.models.manager", only_offroad),
   NativeProcess("modeld_snpe", "sunnypilot/modeld", ["./modeld"], and_(only_onroad, is_snpe_model)),
   NativeProcess("modeld_tinygrad", "sunnypilot/modeld_v2", ["./modeld"], and_(only_onroad, is_tinygrad_model)),
+  PythonProcess("longitudinal_tuner", "opendbc.sunnypilot.nnff_longitudinal_controller.long_manager", enable_offroad_long_tuner),
 
   # Backup
   PythonProcess("backup_manager", "sunnypilot.sunnylink.backups.manager", and_(only_offroad, sunnylink_ready_shim)),
