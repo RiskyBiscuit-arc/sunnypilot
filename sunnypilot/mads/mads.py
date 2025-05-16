@@ -72,7 +72,7 @@ class ModularAssistiveDrivingSystem:
       if self.events.has(EventName.seatbeltNotLatched):
         replace_event(EventName.seatbeltNotLatched, EventNameSP.silentSeatbeltNotLatched)
         transition_paused_state()
-      if self.events.has(EventName.wrongGear) and (CS.standstill or CS.gearShifter == GearShifter.reverse):
+      if self.events.has(EventName.wrongGear) and (CS.vEgo < 2.5 or CS.gearShifter == GearShifter.reverse):
         replace_event(EventName.wrongGear, EventNameSP.silentWrongGear)
         transition_paused_state()
       if self.events.has(EventName.reverseGear):
@@ -88,11 +88,6 @@ class ModularAssistiveDrivingSystem:
       if self.pause_lateral_on_brake_toggle:
         if CS.brakePressed:
           transition_paused_state()
-
-      if not (self.pause_lateral_on_brake_toggle and CS.brakePressed) and \
-         not self.events_sp.contains_in_list(GEARS_ALLOW_PAUSED_SILENT):
-        if self.state_machine.state == State.paused:
-          self.events_sp.add(EventNameSP.silentLkasEnable)
 
       self.events.remove(EventName.preEnableStandstill)
       self.events.remove(EventName.belowEngageSpeed)
@@ -124,6 +119,11 @@ class ModularAssistiveDrivingSystem:
       self.events.remove(EventName.buttonEnable)
       if self.selfdrive.CS_prev.cruiseState.available:
         self.events_sp.add(EventNameSP.lkasDisable)
+
+    if not (self.pause_lateral_on_brake_toggle and CS.brakePressed) and \
+       not self.events_sp.contains_in_list(GEARS_ALLOW_PAUSED_SILENT):
+      if self.state_machine.state == State.paused:
+        self.events_sp.add(EventNameSP.silentLkasEnable)
 
     self.events.remove(EventName.pcmDisable)
     self.events.remove(EventName.buttonCancel)

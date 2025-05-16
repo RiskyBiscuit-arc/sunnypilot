@@ -41,7 +41,7 @@ POLICY_PKL_PATH = Path(__file__).parent / 'models/driving_policy_tinygrad.pkl'
 VISION_METADATA_PATH = Path(__file__).parent / 'models/driving_vision_metadata.pkl'
 POLICY_METADATA_PATH = Path(__file__).parent / 'models/driving_policy_metadata.pkl'
 
-LAT_SMOOTH_SECONDS = 0.3
+LAT_SMOOTH_SECONDS = 0.1
 LONG_SMOOTH_SECONDS = 0.3
 MIN_LAT_CONTROL_SPEED = 0.3
 
@@ -54,9 +54,12 @@ def get_action_from_model(model_output: dict[str, np.ndarray], prev_action: log.
                                                      ModelConstants.T_IDXS,
                                                      action_t=long_action_t)
     desired_accel = smooth_value(desired_accel, prev_action.desiredAcceleration, LONG_SMOOTH_SECONDS)
-    desired_curvature = get_curvature_from_plan(plan[:, Plan.T_FROM_CURRENT_EULER][:, 2],
-                                                plan[:, Plan.ORIENTATION_RATE][:, 2],
-                                                ModelConstants.T_IDXS, v_ego, lat_action_t)
+
+    desired_curvature = get_curvature_from_plan(plan[:,Plan.T_FROM_CURRENT_EULER][:,2],
+                                                plan[:,Plan.ORIENTATION_RATE][:,2],
+                                                ModelConstants.T_IDXS,
+                                                v_ego,
+                                                lat_action_t)
     if v_ego > MIN_LAT_CONTROL_SPEED:
       desired_curvature = smooth_value(desired_curvature, prev_action.desiredCurvature, LAT_SMOOTH_SECONDS)
     else:
