@@ -11,8 +11,10 @@ from opendbc.car.car_helpers import can_fingerprint
 from opendbc.car.interfaces import CarInterfaceBase
 from opendbc.car.hyundai.radar_interface import RADAR_START_ADDR
 from opendbc.car.hyundai.values import HyundaiFlags, DBC as HYUNDAI_DBC
+from opendbc.car.subaru.values import SubaruFlags
 from opendbc.sunnypilot.car.hyundai.longitudinal.helpers import LongitudinalTuningType
 from opendbc.sunnypilot.car.hyundai.values import HyundaiFlagsSP
+from opendbc.sunnypilot.car.subaru.values import SubaruFlagsSP, SubaruSafetyFlagsSP
 from openpilot.common.params import Params
 from openpilot.common.swaglog import cloudlog
 from openpilot.sunnypilot.selfdrive.controls.lib.nnlc.helpers import get_nn_model_path
@@ -77,6 +79,24 @@ def _initialize_radar_tracks(CP: structs.CarParams, CP_SP: structs.CarParamsSP, 
           CP.radarUnavailable = False
 
 
+def _initialize_subaru(CP: structs.CarParams, CP_SP: structs.CarParamsSP, params: Params = None) -> None:
+  if params is None:
+    params = Params()
+
+  if CP.brand != 'subaru' or CP.flags & (SubaruFlags.GLOBAL_GEN2 | SubaruFlags.HYBRID):
+    return
+
+  stop_and_go = params.get_bool("SubaruStopAndGo")
+  stop_and_go_manual_parking_brake = params.get_bool("SubaruStopAndGoManualParkingBrake")
+
+  if stop_and_go:
+    CP_SP.flags |= SubaruFlagsSP.STOP_AND_GO.value
+  if stop_and_go_manual_parking_brake:
+    CP_SP.flags |= SubaruFlagsSP.STOP_AND_GO_MANUAL_PARKING_BRAKE.value
+  if stop_and_go or stop_and_go_manual_parking_brake:
+    CP_SP.safetyParam |= SubaruSafetyFlagsSP.STOP_AND_GO
+
+
 def setup_interfaces(CI: CarInterfaceBase, params: Params = None) -> None:
   CP = CI.CP
   CP_SP = CI.CP_SP
@@ -84,6 +104,7 @@ def setup_interfaces(CI: CarInterfaceBase, params: Params = None) -> None:
   _initialize_custom_longitudinal_tuning(CI, CP, CP_SP, params)
   _initialize_neural_network_lateral_control(CI, CP, CP_SP, params)
   _initialize_radar_tracks(CP, CP_SP, params)
+  # _initialize_subaru(CP, CP_SP, params)
 
 
 def _enable_radar_tracks(CP: structs.CarParams, CP_SP: structs.CarParamsSP, can_recv: CanRecvCallable,
