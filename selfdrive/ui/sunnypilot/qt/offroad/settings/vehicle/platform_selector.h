@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <QJsonDocument>
+
 #include "selfdrive/ui/sunnypilot/qt/offroad/settings/settings.h"
 
 static const QString GREEN_PLATFORM = "#00F100";
@@ -24,7 +26,16 @@ class PlatformSelector : public ButtonControl {
 
 public:
   PlatformSelector();
-  QVariant getPlatformBundle(const QString &key);
+  static QVariant getPlatformBundle(const QString &key) {
+    QString platform_bundle = QString::fromStdString(Params().get("CarPlatformBundle"));
+    if (!platform_bundle.isEmpty()) {
+      QJsonDocument json = QJsonDocument::fromJson(platform_bundle.toUtf8());
+      if (!json.isNull() && json.isObject()) {
+        return json.object().value(key).toVariant();
+      }
+    }
+    return {};
+}
 
   QString platform;
   QString brand;
