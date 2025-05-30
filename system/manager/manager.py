@@ -59,6 +59,7 @@ def manager_init() -> None:
     ("CustomAccIncrementsEnabled", "0"),
     ("CustomAccLongPressIncrement", "5"),
     ("CustomAccShortPressIncrement", "1"),
+    ("DisableUpdates", "1"),
   ]
 
   if params.get_bool("RecordFrontLock"):
