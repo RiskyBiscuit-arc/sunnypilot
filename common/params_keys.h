@@ -93,6 +93,7 @@ inline static std::unordered_map<std::string, uint32_t> keys = {
     {"Offroad_TemperatureTooHigh", CLEAR_ON_MANAGER_START},
     {"Offroad_UnofficialHardware", CLEAR_ON_MANAGER_START},
     {"Offroad_UpdateFailed", CLEAR_ON_MANAGER_START},
+    {"OnroadCycleRequested", CLEAR_ON_MANAGER_START},
     {"OpenpilotEnabledToggle", PERSISTENT | BACKUP},
     {"PandaHeartbeatLost", CLEAR_ON_MANAGER_START | CLEAR_ON_OFFROAD_TRANSITION},
     {"PandaSomResetTriggered", CLEAR_ON_MANAGER_START | CLEAR_ON_OFFROAD_TRANSITION},
@@ -167,4 +168,12 @@ inline static std::unordered_map<std::string, uint32_t> keys = {
     {"HyundaiLongitudinalTuning", PERSISTENT},
 
     {"DynamicExperimentalControl", PERSISTENT},
+
+    // Tuning keys
+    {"HkgTuningAngleSmoothingFactor", PERSISTENT | BACKUP},
+    {"HkgTuningAngleMinTorque", PERSISTENT | BACKUP},
+    {"HkgTuningAngleMaxTorque", PERSISTENT | BACKUP},
+    {"HkgTuningOverridingCycles", PERSISTENT | BACKUP},
+    {"HkgAngleLiveTuning", PERSISTENT | BACKUP}
+    
 };
