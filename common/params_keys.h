@@ -171,4 +171,5 @@ inline static std::unordered_map<std::string, uint32_t> keys = {
 
     {"DynamicExperimentalControl", PERSISTENT},
     {"AccelPersonality", PERSISTENT},
+    {"BlindSpot", PERSISTENT | BACKUP},
 };

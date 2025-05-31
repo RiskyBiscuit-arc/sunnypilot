@@ -45,6 +45,7 @@ def manager_init() -> None:
     ("AccelPersonality", str(custom.LongitudinalPlanSP.AccelerationPersonality.stock)),
     ("AutoLaneChangeTimer", "0"),
     ("AutoLaneChangeBsmDelay", "0"),
+    ("BlindSpot", "0"),
     ("DynamicExperimentalControl", "0"),
     ("HyundaiLongitudinalTuning", "0"),
     ("Mads", "1"),
